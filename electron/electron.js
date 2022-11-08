@@ -45,14 +45,14 @@ ipcMain.handle('get-service-path', () => {
   return settingServiceFilePath
 })
 
-let mainWindow
+let window
 
 //const startup = require('./components/startup')
 
 const createWindow = () => {
   //setupStyle()
 
-  let mainWindowState = {
+  let windowState = {
     x: 0,
     t: 0,
     width: 800,
@@ -61,15 +61,15 @@ const createWindow = () => {
     defaultHeight: 600
   }
 
-  mainWindow = new BrowserWindow({
-    'x': mainWindowState.x,
-    'y': mainWindowState.y,
-    'width': mainWindowState.width,
-    'height': mainWindowState.height,
+  window = new BrowserWindow({
+    'x': windowState.x,
+    'y': windowState.y,
+    'width': windowState.width,
+    'height': windowState.height,
     'minWidth': 500,
     'minHeight': 400,
     webPreferences: {
-      //preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
       //nodeIntegration: true
     },
     //autoHideMenuBar: true,
@@ -78,22 +78,22 @@ const createWindow = () => {
     show: true
   })
 
-  //mainWindow.loadFile(path.join(__dirname, 'index.html'))
+  //window.loadFile(path.join(__dirname, 'index.html'))
   if (app.isPackaged) {
-    win.loadURL(`file://${__dirname}/../index.html`);
+    window.loadURL(`file://${__dirname}/../index.html`);
   } else {
-    win.loadURL('http://localhost:3000/index.html');
+    window.loadURL('http://localhost:3000/index.html');
   }
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools()
+  window.webContents.openDevTools()
 
-  /*mainWindow.on("resize", () => {
-    mainWindow.webContents.send('hook-resize')
+  /*window.on("resize", () => {
+    window.webContents.send('hook-resize')
   })*/
-  mainWindow.once("ready-to-show", () => {
-    //startup.startup(mainWindow)
-    //console.log(mainWindow.getBrowserViews()[0].getBounds())
-    mainWindow.show()
+  window.once("ready-to-show", () => {
+    //startup.startup(window)
+    //console.log(window.getBrowserViews()[0].getBounds())
+    window.show()
   })
 }
 
