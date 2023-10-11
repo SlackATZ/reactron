@@ -70,7 +70,7 @@ const createWindow = () => {
     'minHeight': 400,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      //nodeIntegration: true
+      nodeIntegration: true
     },
     //autoHideMenuBar: true,
     //titleBarStyle: 'hidden',
@@ -78,7 +78,6 @@ const createWindow = () => {
     show: true
   })
 
-  //window.loadFile(path.join(__dirname, 'index.html'))
   if (app.isPackaged) {
     window.loadURL(`file://${__dirname}/../index.html`);
   } else {
@@ -92,10 +91,41 @@ const createWindow = () => {
   })*/
   window.once("ready-to-show", () => {
     //startup.startup(window)
-    //console.log(window.getBrowserViews()[0].getBounds())
     window.show()
   })
 }
+
+ipcMain.handle('find', async (event, target) => {
+  try {
+    const files = await fs.promises.readdir(target)
+    return files.filter(file => file.match('\.csv'))
+  } catch (err) {
+    console.log(err)
+    return []
+  }
+})
+
+const reader = async (rs) => {
+  var array = []
+  for await (const chunk of rs) {
+    console.log(chunk);
+    array.push(chunk)
+  }
+  return array
+};
+const readStream = async (target) => {
+  const rs = fs.createReadStream(target, { encoding: 'utf8' });
+  return await reader(rs);
+}
+ipcMain.handle('res', async (event, target) => {
+  try{
+    const res = await readStream(target)
+    return res
+  } catch (err) {
+    console.log(err)
+    return ''
+  }
+})
 
 app.whenReady().then(() => {
   app.on('activate', () => {
